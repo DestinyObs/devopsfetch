@@ -21,33 +21,47 @@ setup_logs() {
 # Collect and log port information
 log_ports() {
     echo "Logging port information..."
-    ss -tuln > "$PORT_LOG"
+    ss -tuln | awk '
+        BEGIN { print "Port\t\tProtocol\tState\t\tService" }
+        /LISTEN/ { printf "%s\t%s\t%s\t%s\n", $5, $1, $6, $7 }
+    ' > "$PORT_LOG"
 }
 
 # Collect and log Docker information
 log_docker() {
-    echo "Logging Docker images..."
-    docker images > "$DOCKER_LOG"
-    echo "Logging Docker containers..."
-    docker ps >> "$DOCKER_LOG" # Append running containers
+    echo "Logging Docker images and containers..."
+    echo -e "Docker Images:\n" > "$DOCKER_LOG"
+    docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.CreatedAt}}" >> "$DOCKER_LOG"
+    echo -e "\nDocker Containers:\n" >> "$DOCKER_LOG"
+    docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Command}}\t{{.Status}}" >> "$DOCKER_LOG"
 }
 
 # Collect and log Nginx information
 log_nginx() {
     echo "Logging Nginx configuration..."
-    nginx -T > "$NGINX_LOG" # Full Nginx configuration
+    echo -e "Nginx Configuration:\n" > "$NGINX_LOG"
+    nginx -T | awk '
+        BEGIN { print "Domain\t\tPort\t\tConfiguration" }
+        /server_name/ { printf "%s\t%s\t%s\n", $2, "Port Info", $0 }
+    ' >> "$NGINX_LOG"
 }
 
 # Collect and log user information
 log_users() {
     echo "Logging user information..."
-    last > "$USER_LOG"
+    last | awk '
+        BEGIN { print "Username\t\tLast Login" }
+        { printf "%s\t%s\n", $1, $4 " " $5 " " $6 }
+    ' > "$USER_LOG"
 }
 
 # Collect and log system activity information
 log_activities() {
     echo "Logging system activities..."
-    dmesg > "$ACTIVITY_LOG"
+    dmesg | awk '
+        BEGIN { print "Time\t\tMessage" }
+        { printf "%s\t%s\n", $1, $0 }
+    ' > "$ACTIVITY_LOG"
 }
 
 # Display help
@@ -65,9 +79,9 @@ show_help() {
 # Retrieve and display ports
 get_ports() {
     if [ -z "$1" ]; then
-        cat "$PORT_LOG" | grep LISTEN
+        cat "$PORT_LOG"
     else
-        grep "$1" "$PORT_LOG"
+        grep "$1" "$PORT_LOG" || echo "No information found for port: $1"
     fi
 }
 
@@ -76,7 +90,7 @@ get_docker() {
     if [ -z "$1" ]; then
         cat "$DOCKER_LOG"
     else
-        grep "$1" "$DOCKER_LOG"
+        grep "$1" "$DOCKER_LOG" || echo "No information found for container: $1"
     fi
 }
 
@@ -85,7 +99,7 @@ get_nginx() {
     if [ -z "$1" ]; then
         cat "$NGINX_LOG"
     else
-        grep "$1" "$NGINX_LOG"
+        grep "$1" "$NGINX_LOG" || echo "No information found for domain: $1"
     fi
 }
 
@@ -94,7 +108,7 @@ get_users() {
     if [ -z "$1" ]; then
         cat "$USER_LOG"
     else
-        grep "$1" "$USER_LOG"
+        grep "$1" "$USER_LOG" || echo "No information found for user: $1"
     fi
 }
 

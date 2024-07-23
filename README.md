@@ -1,7 +1,3 @@
-### README.md
-
-Here's the `README.md` file in markdown format:
-
 ```markdown
 # DevOps Fetch Tool
 
