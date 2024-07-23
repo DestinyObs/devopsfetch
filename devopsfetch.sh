@@ -110,21 +110,26 @@ get_time_range() {
 # Main function to handle options
 main() {
     setup_logs
-    log_ports
-    log_docker
-    log_nginx
-    log_users
-    log_activities
 
-    case "$1" in
-        -p|--port) get_ports "$2" ;;
-        -d|--docker) get_docker "$2" ;;
-        -n|--nginx) get_nginx "$2" ;;
-        -u|--users) get_users "$2" ;;
-        -t|--time) get_time_range "$2" "$3" ;;
-        -h|--help) show_help ;;
-        *) echo "Unknown option: $1"; show_help ;;
-    esac
+    while true; do
+        log_ports
+        log_docker
+        log_nginx
+        log_users
+        log_activities
+
+        case "$1" in
+            -p|--port) get_ports "$2" ;;
+            -d|--docker) get_docker "$2" ;;
+            -n|--nginx) get_nginx "$2" ;;
+            -u|--users) get_users "$2" ;;
+            -t|--time) get_time_range "$2" "$3" ;;
+            -h|--help) show_help ;;
+            *) echo "Unknown option: $1"; show_help ;;
+        esac
+
+        sleep 60
+    done
 }
 
 # Run the main function with provided arguments
