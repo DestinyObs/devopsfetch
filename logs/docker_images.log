@@ -1,4 +1,0 @@
-REPOSITORY     TAG       IMAGE ID       CREATED       SIZE
-my-flask-app   latest    bcb9bd48dc83   6 days ago    1.09GB
-nginx          latest    fffffc90d343   4 weeks ago   188MB
-CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
