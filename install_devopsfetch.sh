@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Define the log directory and service file paths
-LOG_DIR="$HOME/devopsfetch/logs"
+LOG_DIR="/mnt/c/Users/USER/devopsfetch/logs"
 SERVICE_FILE="/etc/systemd/system/devopsfetch.service"
+SCRIPT_PATH="/mnt/c/Users/USER/devopsfetch/devopsfetch.sh"
 
 # Create the log directory if it doesn't exist
 echo "Creating log directory..."
@@ -21,13 +22,17 @@ done
 echo "Creating systemd service file..."
 sudo bash -c "cat > $SERVICE_FILE <<EOF
 [Unit]
-Description=DevOpsFetch Service
+Description=DevOps Fetch Service
 After=network.target
 
 [Service]
-ExecStart=$HOME/devopsfetch/devopsfetch.sh
-Restart=on-failure
-User=$(whoami)
+ExecStartPre=/bin/sleep 10
+ExecStart=$SCRIPT_PATH
+User=root
+Restart=always
+RestartSec=60
+StandardOutput=append:$LOG_DIR/devopsfetch.log
+StandardError=append:$LOG_DIR/devopsfetch_error.log
 
 [Install]
 WantedBy=multi-user.target
