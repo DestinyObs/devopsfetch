@@ -23,24 +23,21 @@ setup_logs() {
 }
 
 log_ports() {
-    echo "$(date) - Logging port information..." >> "$ACTIVITY_LOG"
+    echo "$(date) - Logging port information..."
     ss -tuln | awk '
         BEGIN { 
             print "------------------------------------------------------"
             print "| Port            | Protocol | State   | Service     |"
             print "------------------------------------------------------"
         }
-        NR > 1 && $1 == "LISTEN" { 
-            split($5, a, ":")
-            port = (length(a[2]) > 0 ? a[2] : "unknown")
-            printf "| %-15s | %-8s | %-7s | %-11s |\n", port, $1, $6, (length($7) > 0 ? $7 : "unknown")
+        /LISTEN/ { 
+            printf "| %-15s | %-8s | %-7s | %-11s |\n", $5, $1, $6, $7 
         }
         END { 
             print "------------------------------------------------------"
         }
-    ' >> "$PORT_LOG" 2>> "$ACTIVITY_LOG"
+    ' > "$PORT_LOG" 2>> "$ACTIVITY_LOG"
 }
-
 
 log_docker() {
     echo "$(date) - Logging Docker images and containers..."
