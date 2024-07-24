@@ -8,7 +8,7 @@ SCRIPT_PATH="/mnt/c/Users/USER/devopsfetch/devopsfetch.sh"
 # Update package list and install dependencies
 echo "Updating package list and installing dependencies..."
 sudo apt update
-sudo apt install -y nginx docker.io systemd net-tools
+sudo apt install -y nginx docker.io containerd systemd net-tools
 
 # Check additional dependencies
 echo "Checking additional dependencies..."
@@ -60,7 +60,8 @@ sudo systemctl start devopsfetch
 # Set up logrotate for devopsfetch logs
 echo "Setting up logrotate for devopsfetch logs..."
 sudo bash -c "cat > /etc/logrotate.d/devopsfetch <<EOF
-/mnt/c/Users/USER/devopsfetch/logs/*.log {
+$LOG_DIR/*.log {
+    su root root
     daily
     rotate 7
     compress
@@ -73,5 +74,4 @@ sudo bash -c "cat > /etc/logrotate.d/devopsfetch <<EOF
     endscript
 }
 EOF"
-
 echo "Installation complete. DevOps Fetch is now running as a systemd service."

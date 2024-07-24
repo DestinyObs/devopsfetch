@@ -151,8 +151,9 @@ get_users() {
 }
 
 timestamp_to_seconds() {
-    date -d"$1" +%s
+    date -d "$1" +%s 2>/dev/null
 }
+
 
 get_time_range() {
     if [ -z "$1" ] || [ -z "$2" ]; then
@@ -168,14 +169,25 @@ get_time_range() {
         return
     fi
 
-    export TZ=UTC
-    awk -v start="$start" -v end="$end" '{
-        current_time = $1
-        if (current_time >= start && current_time <= end) {
-            print $0
+    awk -v start="$start" -v end="$end" '
+        BEGIN {
+            function timestamp_to_seconds(ts) {
+                cmd = "date -d \"" ts "\" +%s"
+                cmd | getline seconds
+                close(cmd)
+                return seconds
+            }
         }
-    }' "$ACTIVITY_LOG"
+        {
+            timestamp = substr($1, 2, length($1) - 2)  # Remove brackets
+            current_time = timestamp_to_seconds(timestamp)
+            if (current_time >= start && current_time <= end) {
+                print $0
+            }
+        }
+    ' "$ACTIVITY_LOG"
 }
+
 
 # Main function to handle options
 main() {
