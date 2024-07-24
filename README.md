@@ -1,6 +1,4 @@
-Here is the corrected Markdown for your GitHub README file:
 
-```markdown
 # devopsfetch
 
 `devopsfetch` is a Bash-based tool designed for monitoring and retrieving detailed server information. It collects data on system activities, ports, user logins, Nginx configurations, Docker images, and more, with robust logging and rotation features.
@@ -142,4 +140,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgements
 
 HNG Stage 5 Mid-Task Submission - This project is part of the HNG internship program, focusing on practical DevOps tasks and tool development.
-```
