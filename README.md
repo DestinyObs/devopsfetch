@@ -125,7 +125,7 @@ To run `devopsfetch`, use the following command:
   ```bash
   ./devopsfetch.sh -u
   ```
-
+![alt text](image.png)
 N.B: I know showing the log file is bad practice but I did it for submission purposes."
 
 ## Configuration
