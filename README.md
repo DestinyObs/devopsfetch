@@ -1,77 +1,89 @@
-```markdown
-# DevOps Fetch Tool
+# DevOps Fetch
 
 ## Overview
-`devopsfetch` is a tool for retrieving and monitoring system information, including active ports, user logins, Nginx configurations, Docker images, and container statuses. It uses a systemd service for continuous monitoring and logging.
+
+DevOps Fetch is a tool for retrieving and monitoring system information. It collects and displays details about active ports, Docker images and containers, Nginx configurations, user logins, and system activities within a specified time range.
 
 ## Installation
 
 ### Prerequisites
-Ensure the following dependencies are installed:
-- awk
-- grep
-- touch
-- mkdir
 
-### Installation Steps
+- Ubuntu or Debian-based system
+- `nginx` installed
+- `docker` installed
+- `systemd` installed
+
+### Steps
+
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/DestinyObs/devopsfetch.git
-   cd devopsfetch
-   ```
+    ```bash
+    git clone https://github.com/yourusername/devopsfetch.git
+    cd devopsfetch
+    ```
 
 2. Run the installation script:
-   ```bash
-   chmod +x install_devopsfetch.sh
-   ./install_devopsfetch.sh
-   ```
+    ```bash
+    sudo ./install.sh
+    ```
 
 ## Usage
-The following command-line flags are available:
 
-- `-p, --port [port]`: Display all ports and services, or detailed info for a specific port.
-- `-d, --docker [container]`: List Docker images/containers or details for a specific container.
-- `-n, --nginx [domain]`: Display Nginx domains/ports or details for a specific domain.
-- `-u, --users [username]`: List all users or details for a specific user.
-- `-t, --time [start end]`: Display activities within a specified time range.
-- `-h, --help`: Show this help message.
+### Commands
 
-### Examples
-```bash
-# Display all active ports
-./devopsfetch.sh -p
+- Display all active ports and services:
+    ```bash
+    devopsfetch -p
+    ```
 
-# Display detailed information for port 80
-./devopsfetch.sh -p 80
+- Provide detailed information about a specific port:
+    ```bash
+    devopsfetch -p <port_number>
+    ```
 
-# List all Docker images and containers
-./devopsfetch.sh -d
+- List all Docker images and containers:
+    ```bash
+    devopsfetch -d
+    ```
 
-# Display detailed information for a specific container
-./devopsfetch.sh -d container_name
+- Provide detailed information about a specific container:
+    ```bash
+    devopsfetch -d <container_name>
+    ```
 
-# Display all Nginx domains and their ports
-./devopsfetch.sh -n
+- Display all Nginx domains and their ports:
+    ```bash
+    devopsfetch -n
+    ```
 
-# Display detailed configuration for a specific domain
-./devopsfetch.sh -n domain.com
+- Provide detailed configuration information for a specific domain:
+    ```bash
+    devopsfetch -n <domain>
+    ```
 
-# List all users and their last login times
-./devopsfetch.sh -u
+- List all users and their last login times:
+    ```bash
+    devopsfetch -u
+    ```
 
-# Display detailed information for a specific user
-./devopsfetch.sh -u username
+- Provide detailed information about a specific user:
+    ```bash
+    devopsfetch -u <username>
+    ```
 
-# Display activities within a specified time range
-./devopsfetch.sh -t "start_time" "end_time"
-```
+- Display activities within a specified time range:
+    ```bash
+    devopsfetch -t "<start_time>" "<end_time>"
+    ```
+
+- Show help message:
+    ```bash
+    devopsfetch -h
+    ```
 
 ## Logging
-Logs are stored in `/devopsfetch/logs/` with automatic log rotation configured via `logrotate`.
 
-## Contributing
-Please feel free to submit issues, fork the repository, and send pull requests!
+Logs are stored in the `/mnt/c/Users/USER/devopsfetch/logs` directory. Log rotation is managed by `logrotate` and configured to rotate logs daily, keeping up to 7 compressed log files.
 
-## License
-This project is licensed under the MIT License.
-```
+## Contributions
+
+Contributions are welcome. Please fork the repository and submit a pull request.
