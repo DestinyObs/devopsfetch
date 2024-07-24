@@ -134,3 +134,7 @@ The tool stores its logs in the directory specified in the `install.sh` script. 
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## Acknowledgements
+
+HNG Stage 5 Mid-Task Submission - This project is part of the HNG internship program, focusing on practical DevOps tasks and tool development.
+
