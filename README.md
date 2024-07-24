@@ -1,3 +1,6 @@
+Here is the corrected Markdown for your GitHub README file:
+
+```markdown
 # devopsfetch
 
 `devopsfetch` is a Bash-based tool designed for monitoring and retrieving detailed server information. It collects data on system activities, ports, user logins, Nginx configurations, Docker images, and more, with robust logging and rotation features.
@@ -63,7 +66,7 @@ To manage log file sizes and ensure regular rotation, the installation script se
    The script creates a configuration file at `/etc/logrotate.d/devopsfetch`. This file contains:
 
    ```bash
-  $LOG_DIR/*.log /logs/*.log {
+   $LOG_DIR/*.log /logs/*.log {
        su root root
        daily
        rotate 7
@@ -125,7 +128,8 @@ To run `devopsfetch`, use the following command:
   ```bash
   ./devopsfetch.sh -u
   ```
-N.B: I know showing the log file is bad practice but I did it for submission purposes."
+
+N.B: I know showing the log file is bad practice but I did it for submission purposes.
 
 ## Configuration
 
@@ -138,4 +142,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgements
 
 HNG Stage 5 Mid-Task Submission - This project is part of the HNG internship program, focusing on practical DevOps tasks and tool development.
-
+```
