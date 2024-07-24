@@ -63,7 +63,7 @@ To manage log file sizes and ensure regular rotation, the installation script se
    The script creates a configuration file at `/etc/logrotate.d/devopsfetch`. This file contains:
 
    ```bash
-  /logs/*.log {
+  $LOG_DIR/*.log /logs/*.log {
        su root root
        daily
        rotate 7

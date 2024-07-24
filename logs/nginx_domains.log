@@ -1,0 +1,7 @@
+------------------------------------------------------
+| Domain         | Port      | Configuration         |
+------------------------------------------------------
+| server_names_hash_bucket_size | Port Info | 	# server_names_hash_bucket_size 64; |
+| server_name_in_redirect | Port Info | 	# server_name_in_redirect off; |
+| _;              | Port Info |     server_name _;     |
+------------------------------------------------------
