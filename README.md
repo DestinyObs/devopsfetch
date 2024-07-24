@@ -1,7 +1,3 @@
-Thanks for sharing the script! Here's a comprehensive update to your README file, incorporating the details about running the installation script, configuring log rotation, and explaining the process:
-
----
-
 # devopsfetch
 
 `devopsfetch` is a Bash-based tool designed for monitoring and retrieving detailed server information. It collects data on system activities, ports, user logins, Nginx configurations, Docker images, and more, with robust logging and rotation features.
