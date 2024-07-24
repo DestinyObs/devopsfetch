@@ -11,60 +11,102 @@ ACTIVITY_LOG="$LOG_DIR/activities.log"
 # Function to create log directory and files if they don't exist
 setup_logs() {
     if [ ! -d "$LOG_DIR" ]; then
-        echo "Creating log directory: $LOG_DIR"
+        echo "$(date) - Creating log directory: $LOG_DIR"
         mkdir -p "$LOG_DIR"
     fi
-    # Create log files if they don't exist
-    touch "$PORT_LOG" "$DOCKER_LOG" "$NGINX_LOG" "$USER_LOG" "$ACTIVITY_LOG"
+    for log_file in "$PORT_LOG" "$DOCKER_LOG" "$NGINX_LOG" "$USER_LOG" "$ACTIVITY_LOG"; do
+        if [ ! -f "$log_file" ]; then
+            touch "$log_file"
+            echo "$(date) - Created log file: $log_file"
+        fi
+    done
 }
 
-# Collect and log port information
 log_ports() {
-    echo "Logging port information..."
+    echo "$(date) - Logging port information..."
     ss -tuln | awk '
-        BEGIN { print "Port\t\tProtocol\tState\t\tService" }
-        /LISTEN/ { printf "%s\t%s\t%s\t%s\n", $5, $1, $6, $7 }
-    ' > "$PORT_LOG"
+        BEGIN { 
+            print "------------------------------------------------------"
+            print "| Port            | Protocol | State   | Service     |"
+            print "------------------------------------------------------"
+        }
+        /LISTEN/ { 
+            printf "| %-15s | %-8s | %-7s | %-11s |\n", $5, $1, $6, $7 
+        }
+        END { 
+            print "------------------------------------------------------"
+        }
+    ' > "$PORT_LOG" 2>> "$ACTIVITY_LOG"
 }
 
-# Collect and log Docker information
 log_docker() {
-    echo "Logging Docker images and containers..."
-    echo -e "Docker Images:\n" > "$DOCKER_LOG"
-    docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.ID}}\t{{.CreatedAt}}" >> "$DOCKER_LOG"
-    echo -e "\nDocker Containers:\n" >> "$DOCKER_LOG"
-    docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Command}}\t{{.Status}}" >> "$DOCKER_LOG"
+    echo "$(date) - Logging Docker images and containers..."
+    {
+        echo "Docker Images:"
+        echo "--------------------------------------------------------------"
+        docker images --format "table | {{.Repository}} | {{.Tag}} | {{.ID}} | {{.CreatedAt}} |"
+        echo "--------------------------------------------------------------"
+        echo
+        echo "Docker Containers:"
+        echo "--------------------------------------------------------------"
+        docker ps --format "table | {{.ID}} | {{.Image}} | {{.Command}} | {{.Status}} |"
+        echo "--------------------------------------------------------------"
+    } > "$DOCKER_LOG" 2>> "$ACTIVITY_LOG"
 }
 
-# Collect and log Nginx information
 log_nginx() {
-    echo "Logging Nginx configuration..."
-    echo -e "Nginx Configuration:\n" > "$NGINX_LOG"
-    nginx -T | awk '
-        BEGIN { print "Domain\t\tPort\t\tConfiguration" }
-        /server_name/ { printf "%s\t%s\t%s\n", $2, "Port Info", $0 }
-    ' >> "$NGINX_LOG"
+    echo "$(date) - Logging Nginx configuration..."
+    nginx -T 2>/dev/null | awk '
+        BEGIN { 
+            print "------------------------------------------------------"
+            print "| Domain         | Port      | Configuration         |"
+            print "------------------------------------------------------"
+        }
+        /server_name/ { 
+            printf "| %-15s | %-8s | %-22s |\n", $2, "Port Info", $0 
+        }
+        END { 
+            print "------------------------------------------------------"
+        }
+    ' > "$NGINX_LOG" 2>> "$ACTIVITY_LOG"
 }
 
-# Collect and log user information
 log_users() {
-    echo "Logging user information..."
+    echo "$(date) - Logging user information..."
     last | awk '
-        BEGIN { print "Username\t\tLast Login" }
-        { printf "%s\t%s\n", $1, $4 " " $5 " " $6 }
-    ' > "$USER_LOG"
+        BEGIN { 
+            print "------------------------------------------------------"
+            print "| Username       | Last Login                       |"
+            print "------------------------------------------------------"
+        }
+        { 
+            printf "| %-15s | %-30s |\n", $1, $4 " " $5 " " $6 
+        }
+        END { 
+            print "------------------------------------------------------"
+        }
+    ' > "$USER_LOG" 2>> "$ACTIVITY_LOG"
 }
 
-# Collect and log system activity information
 log_activities() {
-    echo "Logging system activities..."
+    echo "$(date) - Logging system activities..."
     dmesg | awk '
-        BEGIN { print "Time\t\tMessage" }
-        { printf "%s\t%s\n", $1, $0 }
-    ' > "$ACTIVITY_LOG"
+        BEGIN { 
+            print "------------------------------------------------------"
+            print "| Time                 | Message                    |"
+            print "------------------------------------------------------"
+        }
+        {
+            timestamp = strftime("%Y-%m-%d %H:%M:%S", $1)
+            printf "| %-20s | %-25s |\n", timestamp, $0
+        }
+        END { 
+            print "------------------------------------------------------"
+        }
+    ' > "$ACTIVITY_LOG" 2>> "$ACTIVITY_LOG"
 }
 
-# Display help
+
 show_help() {
     echo "Usage: $0 [options]"
     echo "Options:"
@@ -76,7 +118,6 @@ show_help() {
     echo "  -h, --help               Show this help message"
 }
 
-# Retrieve and display ports
 get_ports() {
     if [ -z "$1" ]; then
         cat "$PORT_LOG"
@@ -85,7 +126,6 @@ get_ports() {
     fi
 }
 
-# Retrieve and display Docker info
 get_docker() {
     if [ -z "$1" ]; then
         cat "$DOCKER_LOG"
@@ -94,7 +134,6 @@ get_docker() {
     fi
 }
 
-# Retrieve and display Nginx info
 get_nginx() {
     if [ -z "$1" ]; then
         cat "$NGINX_LOG"
@@ -103,7 +142,6 @@ get_nginx() {
     fi
 }
 
-# Retrieve and display user info
 get_users() {
     if [ -z "$1" ]; then
         cat "$USER_LOG"
@@ -112,13 +150,31 @@ get_users() {
     fi
 }
 
-# Retrieve and display time range activities
+timestamp_to_seconds() {
+    date -d"$1" +%s
+}
+
 get_time_range() {
     if [ -z "$1" ] || [ -z "$2" ]; then
         echo "Usage: $0 -t [start_time] [end_time]"
         return
     fi
-    awk -v start="$1" -v end="$2" '$0 >= start && $0 <= end' "$ACTIVITY_LOG"
+    
+    start=$(timestamp_to_seconds "$1")
+    end=$(timestamp_to_seconds "$2")
+    
+    if [[ -z "$start" || -z "$end" ]]; then
+        echo "Invalid time format. Please use a valid date string."
+        return
+    fi
+
+    export TZ=UTC
+    awk -v start="$start" -v end="$end" '{
+        current_time = $1
+        if (current_time >= start && current_time <= end) {
+            print $0
+        }
+    }' "$ACTIVITY_LOG"
 }
 
 # Main function to handle options
@@ -146,5 +202,4 @@ main() {
     done
 }
 
-# Run the main function with provided arguments
 main "$@"
