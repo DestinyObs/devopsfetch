@@ -120,11 +120,13 @@ To run `devopsfetch`, use the following command:
   ./devopsfetch.sh -p
   ```
 
-- Retrieve user login information from 2024-07-24 00:00 to 2024-07-24 23:59:
+- Retrieve user login information:
 
   ```bash
-  ./devopsfetch.sh -u --time "2024-07-24 00:00" "2024-07-24 23:59"
+  ./devopsfetch.sh -u
   ```
+
+N.B: I know showing the log file is bad practice but I did it for submission purposes."
 
 ## Configuration
 
